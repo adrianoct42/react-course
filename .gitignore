@@ -40,5 +40,6 @@ jspm_packages/
 *.njsproj
 *.sln
 
-# Ignore zip file
+# Ignore some files
 ultimate-react-course-main.zip
+theory-slides-v1.1.pdf
