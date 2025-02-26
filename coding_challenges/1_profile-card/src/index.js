@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import { skills } from "./skillData";
 
 function App() {
   return (
@@ -11,13 +12,7 @@ function App() {
           name="Adriano Chamon"
           introText="Front End focused web developer, likes to use ReactJS. When not coding, enjoys videogames a lot, especially RPGs, Platformer and 2D Fighting Games. Also enjoys volleyball, Rock and Jazz music, talking with friends and a good glass of strong beer (even if he can't take more than 2 glasses). Nice to meet you!"
         />
-        <SkillList
-          skill1={{ skillName: "React", bgColor: "dodgerBlue" }}
-          skill2={{ skillName: "Flutter", bgColor: "skyBlue" }}
-          skill3={{ skillName: "SQL Server", bgColor: "red" }}
-          skill4={{ skillName: "Git and GitHub", bgColor: "yellow" }}
-          skill5={{ skillName: "SCRUM", bgColor: "magenta" }}
-        />
+        <SkillList />
       </div>
     </div>
   );
@@ -36,12 +31,12 @@ function Intro(props) {
   );
 }
 
-function SkillList(props) {
+function SkillList() {
   return (
     <div className="skill-list">
-      {Object.values(props).map((skillItem, index) => (
-        <h4 key={index} className="skill" style={{ backgroundColor: skillItem.bgColor }}>
-          {skillItem.skillName}
+      {skills.map((skillItem, index) => (
+        <h4 key={index} className="skill" style={{ backgroundColor: skillItem.color }}>
+          {skillItem.skill} {skillItem.level === "beginner" ? "👶" : skillItem.level === "intermediate" ? "👍" : "💪"}
         </h4>
       ))}
     </div>
