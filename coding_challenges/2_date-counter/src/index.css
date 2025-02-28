@@ -1,0 +1,51 @@
+.App {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.step {
+  margin: 20px 0;
+}
+
+.slider {
+  -webkit-appearance: none; /* Remove a aparência padrão do slider */
+  width: 10%; /* Largura total do contêiner pai */
+  height: 8px; /* Altura da trilha do slider */
+  background: #dddddd; /* Cor da trilha do slider */
+  outline: none; /* Remove a borda padrão */
+  opacity: 0.7; /* Transparência */
+  transition: opacity 0.2s; /* Transição suave */
+}
+
+.slider:hover {
+  opacity: 1; /* Opacidade total ao passar o mouse */
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Remove a aparência padrão do thumb */
+  appearance: none; /* Remove a aparência padrão do thumb */
+  width: 25px; /* Largura do thumb */
+  height: 25px; /* Altura do thumb */
+  border-radius: 50%; /* Faz o thumb ser um círculo */
+  background: #4682b4; /* Cor do thumb */
+  cursor: pointer; /* Cursor de ponteiro ao passar o mouse */
+}
+
+button,
+input[type="text"] {
+  font-size: 20px;
+  padding: 10px;
+  margin: 5px;
+  height: 40;
+  box-sizing: border-box;
+}
+
+span {
+  font-size: 24px;
+  margin: 0 15px;
+}
+
+p {
+  font-size: 24px;
+  margin-top: 50px;
+}
