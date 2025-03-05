@@ -44,9 +44,7 @@ function Steps() {
             <div className={step >= 3 ? "active" : ""}>3</div>
           </div>
 
-          <p className="message">
-            Step {step}: {messages[step - 1]}
-          </p>
+          <StepMessage step={step}>{messages[step - 1]}</StepMessage>
 
           <div className="buttons">
             <Button
@@ -66,7 +64,20 @@ function Steps() {
   );
 }
 
+function StepMessage({ step, children }) {
+  return (
+    <div className="message">
+      <h3>Step {step}</h3>
+      {children}
+    </div>
+  );
+}
+
 function Button({ textColor, bgColor, onClick, children }) {
+  // "children" é uma palavra reservada do React que todo componente tem acesso.
+  // Seu valor é exatamente o que está entre a ABERUTRA e FECHAMENTO das tags do componente.
+  // No exemplo acima, seria:
+  // "<span>👈</span> Previous" e "Next <span>👉</span>"
   return (
     <button
       style={{ backgroundColor: bgColor, color: textColor }}
