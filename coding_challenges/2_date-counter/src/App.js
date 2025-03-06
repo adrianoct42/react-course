@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addDays, format, max } from "date-fns";
+import { addDays, format } from "date-fns";
 import "./index.css";
 
 export default function App() {
@@ -10,7 +10,12 @@ export default function App() {
     <div className="App">
       <Step step={step} setStep={setStep} />
       <Counter countDays={countDays} setCountDays={setCountDays} step={step} />
-      <DateText countDays={countDays} step={step} setCountDays={setCountDays} setStep={setStep} />
+      <DateText
+        countDays={countDays}
+        step={step}
+        setCountDays={setCountDays}
+        setStep={setStep}
+      />
     </div>
   );
 }
@@ -35,7 +40,11 @@ function Counter({ countDays, setCountDays, step }) {
   return (
     <div>
       <button onClick={() => setCountDays(countDays - step)}>-</button>
-      <input type="text" value={countDays} onChange={(e) => setCountDays(Number(e.target.value))} />
+      <input
+        type="text"
+        value={countDays}
+        onChange={(e) => setCountDays(Number(e.target.value))}
+      />
       <button onClick={() => setCountDays(countDays + step)}>+</button>
     </div>
   );
@@ -55,9 +64,16 @@ function DateText({ countDays, step, setCountDays, setStep }) {
     <>
       <p>
         {countDays === 0 ? null : Math.abs(countDays)}{" "}
-        {countDays < 0 ? "days ago was" : countDays === 0 ? "Today is" : "days from today is"} {formattedDate}
+        {countDays < 0
+          ? "days ago was"
+          : countDays === 0
+          ? "Today is"
+          : "days from today is"}{" "}
+        {formattedDate}
       </p>
-      {countDays !== 0 || step !== 1 ? <button onClick={handleReset}>Reset</button> : null}
+      {countDays !== 0 || step !== 1 ? (
+        <button onClick={handleReset}>Reset</button>
+      ) : null}
     </>
   );
 }
