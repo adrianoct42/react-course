@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
+import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -7,50 +9,11 @@ const average = (arr) =>
 const apiKey = "97d61671";
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [error, setError] = useState("");
-  const [query, setQuery] = useState("blade");
+  const [query, setQuery] = useState("");
 
-  useEffect(() => {
-    async function fetchMovies() {
-      try {
-        setIsLoading(true);
-        setError("");
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${apiKey}&s=${query}`
-        );
-
-        if (!res.ok) {
-          console.error("An error occurred while fetching the movies!");
-          return;
-        }
-
-        const data = await res.json();
-
-        if (data.Response === "False") {
-          throw new Error("Movie not found!");
-        }
-
-        setMovies(data.Search);
-      } catch (err) {
-        console.log(err.message);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    if (query.length < 3) {
-      setMovies([]);
-      setError("");
-      return;
-    }
-
-    fetchMovies();
-  }, [query]);
+  const { movies, isLoading, error } = useMovies(query);
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
   function handleSelectMovie(movieId) {
     setSelectedId((prev) => (prev === movieId ? null : movieId));
@@ -137,6 +100,22 @@ function Logo() {
 }
 
 function Search({ query, setQuery }) {
+  const inputEl = useRef(null);
+
+  useEffect(() => {
+    function callBack(e) {
+      if (document.activeElement === inputEl.current) return;
+
+      if (e.code === "Enter") {
+        inputEl.current.focus();
+        setQuery("");
+      }
+    }
+
+    document.addEventListener("keydown", callBack);
+    return () => document.removeEventListener("keydown", callBack);
+  }, [setQuery]);
+
   return (
     <input
       className="search"
@@ -144,6 +123,7 @@ function Search({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl}
     />
   );
 }
@@ -172,30 +152,6 @@ function Box({ children }) {
     </div>
   );
 }
-
-/*
-function WatchedBox() {
-  const [isOpen2, setIsOpen2] = useState(true);
-  const [watched, setWatched] = useState(tempWatchedData);
-
-  return (
-    <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
-      >
-        {isOpen2 ? "–" : "+"}
-      </button>
-      {isOpen2 && (
-        <>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieList watched={watched} />
-        </>
-      )}
-    </div>
-  );
-}
-  */
 
 function MovieList({ movies, onSelectMovie }) {
   return (
@@ -227,6 +183,8 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
 
+  const countRef = useRef(0); // Persiste ao longo dos renders, mas NÃO triggera um NOVO RENDER.
+
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
@@ -245,6 +203,31 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     Genre: genre,
   } = movie;
 
+  // O eventListener abaixo serve para que o usuário possa fechar o modal de detalhes do filme
+  // ao apertar a tecla ESC, sem precisar clicar no botão de fechar.
+  // O useEffect está cuidando de ADICIONAR esse eventListener, e remover quando o componente for desmontado.
+  // Caso não seja removido, o eventListener ficará ativo mesmo após o componente ser desmontado.
+  // O que criaria INÚMEROS eventListeners ativos, consumindo memória e processamento.
+  // Em grandes aplicações, isso poderia ser problemático.
+  useEffect(() => {
+    function callBack(e) {
+      if (e.code === "Escape") {
+        onCloseMovie();
+        console.log("EPA");
+      }
+    }
+
+    document.addEventListener("keydown", callBack);
+
+    return function () {
+      document.removeEventListener("keydown", callBack);
+    };
+  }, [onCloseMovie]);
+
+  useEffect(() => {
+    if (userRating) countRef.current += 1;
+  }, [userRating]);
+
   useEffect(() => {
     setIsLoading(true);
     async function getMovieDetails() {
@@ -259,6 +242,17 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     getMovieDetails();
   }, [selectedId]);
 
+  useEffect(() => {
+    if (!title) return;
+    document.title = `MOVIE | ${title}`;
+
+    // Cleanup Function: Reset the title
+    // Vai executar sempre que tiver RE-RENDER ou DISMOUNT de componente
+    return function () {
+      document.title = "usePopcorn";
+    };
+  }, [title]);
+
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -268,6 +262,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
+      countRatingDecisions: countRef.current,
     };
 
     if (!isWatched) onAddWatched(newWatchedMovie);
