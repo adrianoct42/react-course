@@ -13,8 +13,7 @@ import Timer from "./Timer";
 
 const initialState = {
   questions: [],
-  // POSSIBLE STATUS: "loading", "error", "ready", "active", "finished"
-  status: "loading",
+  status: "loading", // POSSIBLE STATUS: "loading", "error", "ready", "active", "finished"
   index: 0,
   answer: null,
   points: 0,
