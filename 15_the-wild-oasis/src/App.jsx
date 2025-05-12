@@ -1,4 +1,3 @@
-import GlobalStyles from "./styles/GlobalStyles";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -30,7 +29,6 @@ function App() {
     <DarkModeProvider>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
-        <GlobalStyles />
         <BrowserRouter>
           <Routes>
             <Route
