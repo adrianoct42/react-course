@@ -1,19 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { updateGuest } from "../_lib/actions";
+import SubmitButton from "./SubmitButton";
 
-function UpdateProfileForm({ children }) {
+function UpdateProfileForm({ children, guest }) {
   const [count, setCount] = useState();
 
-  const countryFlag = "pt.jpg";
-  const nationality = "portugal";
+  const { fullName, email, nationality, nationalID, countryFlag } = guest;
 
   return (
-    <form className="flex flex-col gap-6 px-12 py-8 text-lg bg-primary-900">
+    <form
+      action={updateGuest}
+      className="flex flex-col gap-6 px-12 py-8 text-lg bg-primary-900"
+    >
       <div className="space-y-2">
         <label>Full name</label>
         <input
+          name="fullName"
           disabled
+          defaultValue={fullName}
           className="w-full px-5 py-3 rounded-sm shadow-sm bg-primary-200 text-primary-800 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-400"
         />
       </div>
@@ -21,6 +27,8 @@ function UpdateProfileForm({ children }) {
       <div className="space-y-2">
         <label>Email address</label>
         <input
+          name="email"
+          defaultValue={email}
           disabled
           className="w-full px-5 py-3 rounded-sm shadow-sm bg-primary-200 text-primary-800 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-400"
         />
@@ -36,19 +44,17 @@ function UpdateProfileForm({ children }) {
           />
         </div>
       </div>
-
+      {children}
       <div className="space-y-2">
         <label htmlFor="nationalID">National ID number</label>
         <input
+          defaultValue={nationalID}
           name="nationalID"
           className="w-full px-5 py-3 rounded-sm shadow-sm bg-primary-200 text-primary-800"
         />
       </div>
-      {children}
       <div className="flex items-center justify-end gap-6">
-        <button className="px-8 py-4 font-semibold transition-all bg-accent-500 text-primary-800 hover:bg-accent-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-300">
-          Update profile
-        </button>
+        <SubmitButton pendingLabel="Updating...">Update Profile</SubmitButton>
       </div>
     </form>
   );
